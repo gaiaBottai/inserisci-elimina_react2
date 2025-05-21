@@ -2,16 +2,19 @@ import {useState} from 'react';
 
 export default function Inserimento(props){
     
-    const [aggiungi,setAggiungi]=useState(false);
+    
+    function impostaNome(eventoNome){
+      setNome(eventoNome.target.value);
+    }
+
+const [aggiungi,setAggiungi]=useState(false);
     const [nome,setNome]=useState("");
     const[ cognome,setCognome]=useState("");
     const carica=props.caricaAlunni;
 
-    function impostaNome(eventoNome){
-      setNome(eventoNome.target.value);
-    }
+
     async function Salva(){
-        await fetch(`http://10.22.9.28:8080/alunni`,{
+        await fetch(`http://localhost:8080/alunni`,{
             method:'POST',
             headers:{'Content-Type':"application/json"},
             body:JSON.stringify({nome: nome,cognome:cognome})});
@@ -30,7 +33,7 @@ export default function Inserimento(props){
            <input id="nome" name="nome" onChange={impostaNome}/>
            <br/>
            <label for="cognome" >inserisci cognome:</label>
-           <input id="cognome" name="cognome" onChange={(e)=>{setCognome(e.eventoCognome.value)}}/>
+           <input id="cognome" name="cognome" onChange={(e)=>{setCognome(e.target.value)}}/>
            <br/>
            <button onClick={Salva}>aggiungi</button>
            <button onClick={()=>{setAggiungi(false)}}>annulla</button>

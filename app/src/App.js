@@ -27,6 +27,7 @@ export default App;
 import {useState} from 'react';
 import AlunniRow from './Alunnirow';
 import Inserimento from './Inserimento';
+import Modifica from './Modifica';
 //vogliio al clck del pulsante compare la tabella
 //si vogliono fare le operazioni CRUDD
 //si fa la delete aggiungendo un bottone cancella che chiede la conferma della cancellazione e poi cancella
@@ -34,6 +35,9 @@ function App(){
 
   const [alunni,setAlunni]=useState([]); //inizializzo un array vuoto una variabile
   const [loading,setLoading]=useState(false);
+
+  const [mostraForm, setMostraForm] = useState(false);
+  const [mostraModifica, setMostraModifica] = useState(false);
 
 
   async function caricaAlunni(){
@@ -48,13 +52,25 @@ function App(){
     }) questo è uguale a fare :
   }*/
   setLoading(true);//sta caricadno
-  const response= await fetch("http://10.22.9.28:8080/alunni",{method:"GET"}); //mi collego all'ip di mangione 
+  const response= await fetch("http://localhost:8080/alunni",{method:"GET"}); //mi collego all'ip di mangione 
   const data=await response.json(); //carica la risposta e subito dopo va a settare gli alunni
 //in questo modo faccio il get degli alunni
   
 
 setAlunni(data);//dò alla variabile alunni il valore di data che contiene la risposta del json
 setLoading(false); //finisce di caricare e stampa la tabella
+function impostaId(id){
+  setId(id);
+}
+/*function toggleModifica() {
+  setMostraModifica(!mostraModifica);
+}*/
+async function salvaModifiche(alunno) {
+  const response = await fetch(`http://localhost:8080/alunni/${id}`, {method: "PUT",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({nome: nome, cognome: cognome})});
+  console.log(response);
+  caricaAlunni();
 }
   return (
     <div className="App">
@@ -78,19 +94,30 @@ setLoading(false); //finisce di caricare e stampa la tabella
             )
           })
         }*/
+        <>
         <table border="1">
         {alunni.map(a=> //è la stessa cosa di prima ma scritta in un'altra forma
-             <AlunniRow alunno={a} caricaAlunni={caricaAlunni}/>//passo una variabile alle funzione con nome alunno per ogni alunno
-                                   //sto passando anche un riferimento alla funzione caricaALunni
-
-                                 
+             <AlunniRow alunno={a} caricaAlunni={caricaAlunni} refId={impostaId}/>//passo una variabile alle funzione con nome alunno per ogni alunno
+              //sto passando anche un riferimento alla funzione caricaALunni
+          
+                          
+             
             )}
           
           </table>
+          mostraModifica 
+          <label htmlFor='nome'>nome</label>
+        <input name='nome' id='nome' onChange={(event) => setNome(event.target.value)}/><br/>
+        <label htmlFor='cognome'>cognome</label>
+        <input name='cognome' id='cognome' onChange={(event) => setCognome(event.target.value)}/><br/>
+        <button onClick={salvaModifiche}>Conferma</button>
+        <button onClick={toggleModifica}>annulla</button>
 
-     
+           
+          <Inserimento caricaAlunni={caricaAlunni}/>
+     </>
       )}
-      <Inserimento caricaAlunni={caricaAlunni}/>
+      
     </>
      }</div>
   );
